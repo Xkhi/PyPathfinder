@@ -10,8 +10,13 @@ index_bs4 = BeautifulSoup(index_raw.text, 'html.parser')
 spellList = index_bs4.find('div', {'id': 'spell-index-wrapper'})
 spellList = spellList.findAll('a')
 
-with open("SpellList.txt","w+") as spellFile:
+with open("SpellList.html","w+") as spellFile:
     for spell in spellList:
         txt = spell_root_url+spell.attrs['href']
-        buffer = BeautifulSoup(requests.get(txt).text, 'html.parser').find('div', {'class': 'body'})
-        spellFile.write(buffer.text)
+        try: 
+            buffer = BeautifulSoup(requests.get(txt).text, 'html.parser').find('div', {'class': 'body'})
+            buffer.find('div', {'class': 'footer'}).decompose()
+            spellFile.write(str(buffer)+'<hr>\n\n')
+        except AttributeError:
+            print(spell.text, "has error with decompose")
+            print(txt)
