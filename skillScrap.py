@@ -22,5 +22,3 @@ with open('skillScrap.html', 'w+') as dest_file:
                 dest_file.write(str(i))
         except:
             print("Error in",url)
-
-pass
