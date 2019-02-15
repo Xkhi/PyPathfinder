@@ -8,15 +8,29 @@ monsterIndex = parse_url(rootUrl, tag='div', dict={'id': 'monster-index-wrapper'
 
 monsterList = monsterIndex.findAll('li')
 with open('bestiary.html', 'w+') as destFile:
-    destFile.write('Alphabetical Index')
+    destFile.write('<head><link rel="stylesheet" type="text/css" href="styles.css" media="screen" /></head>\n')
+    destFile.write('<body>\n')
     for monster in monsterList:
         # monster.find('a').attrs['href'] = baseUrl + monster.find('a').attrs['href']
         destFile.write(str(monster))
 
-    destFile.write('Contents')
+    destFile.write('<p>Contents</p>\n')
+    monsterUrlList = []
     for monster in monsterList:
         monsterUrl = baseUrl + monster.find('a').attrs['href'][2:]
-        monsterData = parse_url(monsterUrl, tag='div', dict={'class': 'body'})
-        for p in monsterData:
-            destFile.write(str(p))
-        break
+        if monsterUrl not in monsterUrlList:
+            monsterUrlList.append(monsterUrl)
+            monsterData = parse_url(monsterUrl, tag='div', dict={'class': 'body'})
+            try:
+                monsterData.find('div', {'class': 'footer'}).decompose()
+            except AttributeError:
+                print(monster.text, 'has no footer')
+
+            for p in monsterData:
+                try:
+                    destFile.write(str(p))
+                except:
+                    print('Error in', monster.text)
+            destFile.write('\n\n')
+
+    destFile.write('</body>')
